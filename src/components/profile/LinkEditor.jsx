@@ -32,6 +32,7 @@ const LinkEditor = ({
   const [errors, setErrors] = useState({});
 
   const handleChange = (field, value) => {
+    console.log('handleChange', { field, value });
     setFormData((prev) => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: null }));
@@ -63,11 +64,14 @@ const LinkEditor = ({
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    console.log('handleSubmit - formData before validation', formData);
     if (validate()) {
       const url = formData.url.startsWith('http')
         ? formData.url
         : `https://${formData.url}`;
-      onSave?.({ ...formData, url });
+      const savedData = { ...formData, url };
+      console.log('handleSubmit - saving data', savedData);
+      onSave?.(savedData);
     }
   };
 
