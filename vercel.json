@@ -80,10 +80,5 @@
       ]
     }
   ],
-  "rewrites": [
-    {
-      "source": "/((?!api/).*)",
-      "destination": "/"
-    }
-  ]
+  "rewrites": []
 }
