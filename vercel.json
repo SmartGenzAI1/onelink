@@ -80,5 +80,10 @@
       ]
     }
   ],
-  "rewrites": []
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/"
+    }
+  ]
 }
