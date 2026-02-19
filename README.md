@@ -1,249 +1,147 @@
-# OneLink - Link in Bio Platform
+# OneLink
 
-A modern, customizable link-in-bio application built with React, Firebase, and Tailwind CSS. Create beautiful profiles to share all your important links in one place.
+**OneLink** is a modern, fully‑featured link‑in‑bio web application built with **React**, **Vite**, **Tailwind CSS**, and **Firebase**. It allows users to create a personalized landing page with customizable links, analytics, and a sleek UI.
 
-![OneLink](https://img.shields.io/badge/version-1.0.0-blue)
-![React](https://img.shields.io/badge/React-18.x-61DAFB)
-![Firebase](https://img.shields.io/badge/Firebase-9.x-FFCA28)
-![Tailwind CSS](https://img.shields.io/badge/Tailwind-3.x-38B2AC)
+---
+
+## Table of Contents
+- [Features](#features)
+- [Demo](#demo)
+- [Installation](#installation)
+- [Configuration](#configuration)
+- [Running Locally](#running-locally)
+- [Deployment](#deployment)
+  - [Vercel (recommended)](#vercel-recommended)
+  - [Custom Domain](#custom-domain)
+- [Environment Variables](#environment-variables)
+- [Project Structure](#project-structure)
+- [Captcha Protection](#captcha-protection)
+- [Contributing](#contributing)
+- [License](#license)
+
+---
 
 ## Features
+- **Customizable profile** – avatar, background, theme, and link groups.
+- **Analytics** – real‑time click tracking with Firebase.
+- **Responsive UI** – built with Tailwind CSS and Framer Motion.
+- **Google reCAPTCHA** – protects the registration flow from bots.
+- **Vercel‑ready** – zero‑config deployment.
+- **TypeScript‑ready** – the codebase can be migrated easily.
 
-- 🔗 **Link Management** - Add, edit, reorder, and schedule your links
-- 📊 **Analytics Dashboard** - Track views, clicks, and engagement
-- 🎨 **Customizable Profiles** - Multiple templates and themes
-- 🔐 **Authentication** - Google, GitHub, and email/password login
-- 📱 **Responsive Design** - Works perfectly on all devices
-- 🌙 **Dark Mode** - Built-in dark mode support
-- 🔍 **SEO Optimized** - Meta tags for better visibility
+---
 
-## Getting Started
+## Demo
+A live demo is hosted at the Vercel‑generated URL:
+```
+https://onelink-<random>.vercel.app
+```
+_(Replace `<random>` with the actual sub‑domain shown after the first deployment.)_
 
-### Prerequisites
+---
 
-- Node.js 18.x or higher
-- npm or yarn
-- Firebase account (free tier)
+## Installation
+```bash
+# Clone the repository
+git clone https://github.com/SmartGenzAI1/onelink.git
+cd onelink
 
-### Installation
+# Install dependencies
+npm install
+```
 
-1. **Clone the repository**
-   ```bash
-   git clone <repository-url>
-   cd onelink
-   ```
+---
 
-2. **Install dependencies**
-   ```bash
-   npm install
-   ```
+## Configuration
+1. **Firebase** – Create a Firebase project and add the config to `src/config/firebase.js`.
+2. **reCAPTCHA** – Obtain a site key from Google reCAPTCHA and replace the placeholder in `src/components/auth/RegisterForm.jsx`:
+```js
+<ReCAPTCHA sitekey="YOUR_RECAPTCHA_SITE_KEY" onChange={setCaptchaToken} />
+```
+3. **Environment variables** – See the **Environment Variables** section.
 
-3. **Set up environment variables**
-   ```bash
-   cp .env.example .env
-   ```
+---
 
-4. **Configure Firebase**
+## Running Locally
+```bash
+npm run dev
+```
+Open `http://localhost:3000` in your browser.
 
-   - Go to [Firebase Console](https://console.firebase.google.com)
-   - Create a new project
-   - Enable Authentication (Google, GitHub, Email/Password)
-   - Enable Firestore Database
-   - Enable Storage (for image uploads)
-   - Get your configuration values from Project Settings > Your apps > Web app
-
-5. **Update your .env file**
-   ```
-   VITE_FIREBASE_API_KEY=your_api_key
-   VITE_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-   VITE_FIREBASE_PROJECT_ID=your_project_id
-   VITE_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-   VITE_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-   VITE_FIREBASE_APP_ID=your_app_id
-   VITE_FIREBASE_MEASUREMENT_ID=your_measurement_id
-   ```
-
-6. **Set up Firestore Security Rules**
-   
-   Deploy the security rules from `firestore.rules`:
-   ```bash
-   firebase deploy --only firestore:rules
-   ```
-
-   Or manually copy the rules in Firebase Console:
-   - Go to Firestore Database > Rules
-   - Copy contents from `firestore.rules`
-
-7. **Start development server**
-   ```bash
-   npm run dev
-   ```
-
-8. **Open browser**
-   Navigate to http://localhost:5173
-
-## Firebase Setup Guide
-
-### Step 1: Create Firebase Project
-
-1. Go to [Firebase Console](https://console.firebase.google.com)
-2. Click "Add project"
-3. Enter project name
-4. Disable Google Analytics (optional)
-5. Wait for project creation
-
-### Step 2: Enable Authentication
-
-1. Go to Authentication > Sign-in method
-2. Enable Google:
-   - Add your domain to authorized domains
-3. Enable GitHub:
-   - Create OAuth app in GitHub Developer settings
-   - Add client ID and secret
-4. Enable Email/Password
-
-### Step 3: Create Firestore Database
-
-1. Go to Firestore Database
-2. Create database (start in test mode initially)
-3. Deploy security rules
-
-### Step 4: Enable Storage
-
-1. Go to Storage
-2. Start in test mode
-3. Set up rules for production
-
-### Step 5: Get Configuration
-
-1. Go to Project Settings (gear icon)
-2. Scroll to "Your apps"
-3. Select Web app (</>)
-4. Copy configuration values
+---
 
 ## Deployment
+### Vercel (recommended)
+1. Sign in at https://vercel.com.
+2. Import the repository (`https://github.com/SmartGenzAI1/onelink`).
+3. Vercel auto‑detects the `vercel.json` configuration:
+   - **Framework**: `vite`
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+4. Click **Deploy**. After a successful build Vercel will provide a preview URL and a permanent URL.
 
-### Vercel (Recommended)
+### Custom Domain
+If you own a domain (e.g., `onelink.bio`):
+1. In Vercel Dashboard → **Project Settings → Domains**, add your domain.
+2. Update your DNS provider to point the domain to Vercel’s nameservers (or add an `A`/`CNAME` record as instructed).
+3. Deploy – Vercel will serve the same app under your custom domain.
 
-1. **Push to GitHub**
-   ```bash
-   git init
-   git add .
-   git commit -m "Initial commit"
-   git branch -M main
-   git remote add origin <your-github-repo>
-   git push -u origin main
-   ```
-
-2. **Deploy to Vercel**
-   - Go to [Vercel Dashboard](https://vercel.com/dashboard)
-   - Import your repository
-   - Add environment variables
-   - Deploy
-
-3. **Configure Firebase Authorized Domains**
-   - Add your Vercel domain to Firebase Console > Authentication > Settings > Authorized domains
-
-### Netlify
-
-1. **Deploy to Netlify**
-   ```bash
-   npm install -g netlify-cli
-   netlify deploy --prod
-   ```
-
-2. **Or connect via GitHub**
-   - Go to Netlify Dashboard
-   - Import from GitHub
-   - Configure build settings:
-     - Build command: `npm run build`
-     - Publish directory: `dist`
-   - Add environment variables
-
-### Firebase Hosting
-
-1. **Install Firebase CLI**
-   ```bash
-   npm install -g firebase-tools
-   firebase login
-   ```
-
-2. **Initialize Firebase**
-   ```bash
-   firebase init hosting
-   ```
-
-3. **Deploy**
-   ```bash
-   firebase deploy --only hosting
-   ```
-
-## Project Structure
-
-```
-onelink/
-├── src/
-│   ├── components/       # React components
-│   │   ├── analytics/    # Analytics components
-│   │   ├── auth/         # Authentication components
-│   │   ├── dashboard/    # Dashboard components
-│   │   ├── layout/       # Layout components
-│   │   ├── profile/      # Profile components
-│   │   ├── public/       # Public profile components
-│   │   ├── settings/     # Settings components
-│   │   ├── templates/    # Template components
-│   │   └── ui/           # UI components
-│   ├── contexts/         # React contexts
-│   ├── hooks/            # Custom React hooks
-│   ├── pages/            # Page components
-│   ├── services/         # Firebase services
-│   ├── styles/           # CSS styles
-│   ├── utils/            # Utility functions
-│   └── config/           # Configuration files
-├── functions/            # Firebase Cloud Functions
-├── firestore.rules       # Firestore security rules
-└── package.json
-```
-
-## Scripts
-
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
-- `npm run lint` - Run ESLint
+---
 
 ## Environment Variables
-
 | Variable | Description |
 |----------|-------------|
-| `VITE_FIREBASE_API_KEY` | Firebase API Key |
-| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth Domain |
-| `VITE_FIREBASE_PROJECT_ID` | Firebase Project ID |
-| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase Storage Bucket |
-| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Firebase Messaging Sender ID |
-| `VITE_FIREBASE_APP_ID` | Firebase App ID |
-| `VITE_FIREBASE_MEASUREMENT_ID` | Firebase Measurement ID |
+| `VITE_FIREBASE_API_KEY` | Your Firebase API key |
+| `VITE_FIREBASE_AUTH_DOMAIN` | Firebase Auth domain |
+| `VITE_FIREBASE_PROJECT_ID` | Firebase project ID |
+| `VITE_FIREBASE_STORAGE_BUCKET` | Firebase storage bucket |
+| `VITE_FIREBASE_MESSAGING_SENDER_ID` | Messaging sender ID |
+| `VITE_FIREBASE_APP_ID` | Firebase app ID |
+| `RECAPTCHA_SITE_KEY` | Google reCAPTCHA site key |
 
-## Tech Stack
+Add these to a `.env` file (or to Vercel’s **Environment Variables** UI). Vite will expose those prefixed with `VITE_` to the client.
 
-- **Frontend**: React 18, Vite
-- **Styling**: Tailwind CSS, Framer Motion
-- **Backend**: Firebase (Auth, Firestore, Storage, Functions)
-- **Icons**: Lucide React
-- **Charts**: Recharts
+---
+
+## Project Structure
+```
+├─ src/
+│  ├─ components/      # React components
+│  ├─ pages/           # Route pages
+│  ├─ hooks/           # Custom hooks
+│  ├─ config/          # Firebase config
+│  └─ main.jsx         # Application entry point
+├─ public/             # Static assets
+├─ vercel.json          # Vercel configuration
+├─ vite.config.js       # Vite configuration
+└─ README.md            # This file
+```
+
+---
+
+## Captcha Protection
+The registration form (`src/components/auth/RegisterForm.jsx`) now includes Google reCAPTCHA:
+```jsx
+import ReCAPTCHA from 'react-google-recaptcha';
+// ...
+<ReCAPTCHA sitekey={process.env.RECAPTCHA_SITE_KEY} onChange={setCaptchaToken} />
+```
+The form blocks submission until a valid token is received, and the token is sent together with the rest of the form data.
+
+---
 
 ## Contributing
+1. Fork the repository.
+2. Create a feature branch (`git checkout -b feature/awesome-feature`).
+3. Commit your changes (`git commit -m "Add awesome feature"`).
+4. Push to your fork (`git push origin feature/awesome-feature`).
+5. Open a Pull Request.
 
-1. Fork the repository
-2. Create your feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+---
 
 ## License
+This project is licensed under the MIT License. See `LICENSE` for details.
 
-This project is licensed under the MIT License.
+---
 
-## Support
-
-For issues and questions, please open an issue on GitHub.
+*Happy coding!*
