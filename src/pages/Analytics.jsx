@@ -32,7 +32,7 @@ import {
   CircularProgressChart,
   ProgressBarChart
 } from '../components/analytics'
-import { analyticsService } from '../services/analyticsService'
+import { analyticsApi } from '../lib/api'
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 

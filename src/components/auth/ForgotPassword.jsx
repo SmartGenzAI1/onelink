@@ -52,33 +52,33 @@ const ForgotPassword = ({
 
         <AnimatePresence mode="wait">
           {success ? (
-            <motion.div
-              key="success"
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="text-center py-4"
-            >
-              <div className="w-16 h-16 bg-success-100 dark:bg-success-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                <CheckCircle className="w-8 h-8 text-success-600 dark:text-success-400" />
-              </div>
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
-                Check your email
-              </h2>
-              <p className="text-gray-600 dark:text-gray-400 mb-4">
-                We've sent a password reset link to<br />
-                <span className="font-medium text-gray-900 dark:text-white">{email}</span>
-              </p>
-              <p className="text-sm text-gray-500 dark:text-gray-400">
-                Didn't receive the email? Check your spam folder or{' '}
-                <button
-                  onClick={() => onSubmit(email)}
-                  className="text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium"
-                >
-                  try again
-                </button>
-              </p>
-            </motion.div>
+               <motion.div
+                 key="success"
+                 initial={{ opacity: 0, scale: 0.95 }}
+                 animate={{ opacity: 1, scale: 1 }}
+                 exit={{ opacity: 0, scale: 0.95 }}
+                 className="text-center py-4"
+               >
+                 <div className="w-16 h-16 bg-success-100 dark:bg-success-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                   <CheckCircle className="w-8 h-8 text-success-600 dark:text-success-400" />
+                 </div>
+                 <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-2">
+                   Check your email
+                 </h2>
+                 <p className="text-gray-600 dark:text-gray-400 mb-4">
+                   We've sent a magic link to<br />
+                   <span className="font-medium text-gray-900 dark:text-white">{email}</span>
+                 </p>
+                 <p className="text-sm text-gray-500 dark:text-gray-400">
+                   Didn't receive the email? Check your spam folder or{' '}
+                   <button
+                     onClick={() => onSubmit(email)}
+                     className="text-primary-600 hover:text-primary-700 dark:text-primary-400 font-medium"
+                   >
+                     try again
+                   </button>
+                 </p>
+               </motion.div>
           ) : (
             <motion.div
               key="form"
@@ -86,18 +86,18 @@ const ForgotPassword = ({
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
             >
-              {/* Header */}
-              <div className="text-center mb-6">
-                <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Mail className="w-8 h-8 text-primary-600 dark:text-primary-400" />
-                </div>
-                <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                  Forgot your password?
-                </h2>
-                <p className="text-gray-600 dark:text-gray-400 mt-2">
-                  No worries! Enter your email address and we'll send you a link to reset your password.
-                </p>
-              </div>
+               {/* Header */}
+               <div className="text-center mb-6">
+                 <div className="w-16 h-16 bg-primary-100 dark:bg-primary-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                   <Mail className="w-8 h-8 text-primary-600 dark:text-primary-400" />
+                 </div>
+                 <h2 className="text-xl font-bold text-gray-900 dark:text-white">
+                   Didn't receive the magic link?
+                 </h2>
+                 <p className="text-gray-600 dark:text-gray-400 mt-2">
+                   Enter your email address and we'll send you a new magic link to sign in.
+                 </p>
+               </div>
 
               {/* Form */}
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -134,19 +134,19 @@ const ForgotPassword = ({
                   autoComplete="email"
                 />
 
-                <Button
-                  type="submit"
-                  variant="primary"
-                  fullWidth
-                  disabled={loading}
-                  className="h-12"
-                >
-                  {loading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    'Send Reset Link'
-                  )}
-                </Button>
+                 <Button
+                   type="submit"
+                   variant="primary"
+                   fullWidth
+                   disabled={loading}
+                   className="h-12"
+                 >
+                   {loading ? (
+                     <Loader2 className="w-5 h-5 animate-spin" />
+                   ) : (
+                     'Send Magic Link'
+                   )}
+                 </Button>
               </form>
             </motion.div>
           )}

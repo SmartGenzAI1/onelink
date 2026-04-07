@@ -34,7 +34,7 @@
 ## Demo
 A live demo is hosted at the Vercel‑generated URL:
 ```
-https://onelink-<random>.vercel.app
+https://<random>.vercel.app
 ```
 _(Replace `<random>` with the actual sub‑domain shown after the first deployment.)_
 
@@ -53,10 +53,7 @@ npm install
 ---
 
 ## Configuration
-1. **Firebase** – Create a Firebase project and add the config to `src/config/firebase.js`.
-2. **reCAPTCHA** – Obtain a site key from Google reCAPTCHA and replace the placeholder in `src/components/auth/RegisterForm.jsx`:
-```js
-<ReCAPTCHA sitekey="YOUR_RECAPTCHA_SITE_KEY" onChange={setCaptchaToken} />
+....
 ```
 3. **Environment variables** – See the **Environment Variables** section.
 

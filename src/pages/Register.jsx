@@ -1,81 +1,58 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
-import { useAuth } from '../contexts/AuthContext'
-import { RegisterForm, SocialLoginButtons } from '../components/auth'
-import toast from 'react-hot-toast'
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { useAuth } from '../contexts/AuthContext';
+import { RegisterForm, SocialLoginButtons } from '../components/auth';
+import toast from 'react-hot-toast';
 
 function Register() {
-  const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
-  const { signup, loginWithGoogle, loginWithGithub } = useAuth()
-  const navigate = useNavigate()
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
+  const { signup, loginWithGoogle, loginWithGithub } = useAuth();
+  const navigate = useNavigate();
 
-  const handleSubmit = async ({ email, password, displayName }) => {
+  const handleSubmit = async ({ email, displayName }) => {
     try {
-      setError('')
-      setLoading(true)
-      await signup(email, password, displayName)
-      toast.success('Account created! Please check your email for verification.')
-      navigate('/verify-email')
+      setError('');
+      setLoading(true);
+
+      const result = await signup(email, displayName);
+      toast.success(result.message || 'Check your email for the magic link!');
+
+      // Redirect to a page that explains to check email
+      navigate('/check-email', { state: { email } });
     } catch (err) {
-      console.error('Registration error:', err)
-      setError(getErrorMessage(err.code))
+      setError(err.message || 'Registration failed');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   const handleGoogleLogin = async () => {
     try {
-      setError('')
-      setLoading(true)
-      await loginWithGoogle()
-      toast.success('Welcome!')
-      navigate('/dashboard')
+      setLoading(true);
+      setError('');
+      await loginWithGoogle();
     } catch (err) {
-      console.error('Google login error:', err)
-      setError(getErrorMessage(err.code))
-    } finally {
-      setLoading(false)
+      setError(err.message || 'Google sign in failed');
+      setLoading(false);
     }
-  }
+  };
 
   const handleGithubLogin = async () => {
     try {
-      setError('')
-      setLoading(true)
-      await loginWithGithub()
-      toast.success('Welcome!')
-      navigate('/dashboard')
+      setLoading(true);
+      setError('');
+      await loginWithGithub();
     } catch (err) {
-      console.error('GitHub login error:', err)
-      setError(getErrorMessage(err.code))
-    } finally {
-      setLoading(false)
+      setError(err.message || 'GitHub sign in failed');
+      setLoading(false);
     }
-  }
-
-  const getErrorMessage = (code) => {
-    switch (code) {
-      case 'auth/email-already-in-use':
-        return 'An account with this email already exists'
-      case 'auth/invalid-email':
-        return 'Invalid email address'
-      case 'auth/weak-password':
-        return 'Password is too weak. Please use a stronger password.'
-      case 'auth/popup-closed-by-user':
-        return 'Sign up cancelled'
-      case 'auth/account-exists-with-different-credential':
-        return 'An account with this email already exists. Try a different login method.'
-      default:
-        return 'An error occurred. Please try again.'
-    }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-slate-900 flex items-center justify-center px-4 py-12">
-      <motion.div 
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
@@ -84,7 +61,7 @@ function Register() {
         {/* Logo & Header */}
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center space-x-2 mb-6 group">
-            <motion.div 
+            <motion.div
               className="w-12 h-12 bg-gradient-to-br from-blue-500 to-indigo-500 rounded-xl shadow-lg shadow-blue-500/25"
               whileHover={{ scale: 1.05, rotate: -5 }}
               whileTap={{ scale: 0.95 }}
@@ -122,8 +99,8 @@ function Register() {
           {/* Sign In Link */}
           <p className="text-center text-slate-400 mt-6">
             Already have an account?{' '}
-            <Link 
-              to="/login" 
+            <Link
+              to="/login"
               className="text-blue-500 hover:text-blue-400 font-medium transition-colors"
             >
               Sign in
@@ -160,7 +137,7 @@ function Register() {
         </p>
       </motion.div>
     </div>
-  )
+  );
 }
 
-export default Register
+export default Register;

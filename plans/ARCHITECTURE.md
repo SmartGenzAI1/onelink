@@ -42,23 +42,7 @@ OneLink is a modern link-in-bio platform that enables users to create a personal
 └─────────────────────────────────────────────────────────────────┘
                               │
                               ▼
-┌─────────────────────────────────────────────────────────────────┐
-│                     FIREBASE SERVICES                            │
-│  ┌──────────────┐ ┌──────────────┐ ┌──────────────┐            │
-│  │ Firebase Auth│ │  Firestore   │ │ Firebase CDN │            │
-│  │  - Email/Pass│ │  - Users     │ │  - Hosting   │            │
-│  │  - Google    │ │  - Profiles  │ │  - Storage   │            │
-│  │  - OAuth     │ │  - Links     │ └──────────────┘            │
-│  └──────────────┘ │  - Analytics │                             │
-│                    │  - Templates │                             │
-│  ┌──────────────┐ └──────────────┘                             │
-│  │Cloud Functions│                                             │
-│  │ - API Routes │                                              │
-│  │ - Analytics  │                                              │
-│  │ - QR Gen     │                                              │
-│  └──────────────┘                                              │
-└─────────────────────────────────────────────────────────────────┘
-```
+.........................................................
 
 ### 1.4 Technology Stack
 
@@ -68,22 +52,22 @@ OneLink is a modern link-in-bio platform that enables users to create a personal
 | Styling | Tailwind CSS | Utility-first CSS |
 | State Management | React Context + Hooks | Global state |
 | Routing | React Router v6 | Client-side routing |
-| Backend | Firebase | BaaS platform |
-| Database | Cloud Firestore | NoSQL database |
+| Backend |............
+| Database |..............
 | Authentication | Firebase Auth | User management |
-| Hosting | Firebase Hosting | CDN deployment |
-| Storage | Firebase Storage | File uploads |
+| Hosting | ......
+| Storage | .....
 | Functions | Cloud Functions | Server-side logic |
-| Analytics | Custom + Firebase Analytics | Usage tracking |
+| Analytics | ..
 
 ---
 
 ## 2. Database Schema
 
-### 2.1 Firestore Collections Overview
+### 2.1  Collections Overview
 
 ```
-firestore/
+store/
 ├── users/           # User account data
 ├── profiles/        # User profile pages
 ├── links/           # Individual links
@@ -1008,17 +992,7 @@ const authConfig = {
 
 ```bash
 # .env.example
-REACT_APP_FIREBASE_API_KEY=your_api_key
-REACT_APP_FIREBASE_AUTH_DOMAIN=your_project.firebaseapp.com
-REACT_APP_FIREBASE_PROJECT_ID=your_project_id
-REACT_APP_FIREBASE_STORAGE_BUCKET=your_project.appspot.com
-REACT_APP_FIREBASE_MESSAGING_SENDER_ID=your_sender_id
-REACT_APP_FIREBASE_APP_ID=your_app_id
-REACT_APP_FIREBASE_MEASUREMENT_ID=your_measurement_id
-REACT_APP_BASE_URL=https://onelink.app
-REACT_APP_QR_API_URL=https://api.qrserver.com/v1
-```
-
+......................
 ---
 
 ## 6. API Endpoints and Cloud Functions
@@ -1149,7 +1123,7 @@ exports.generateQRCode = functions.https.onCall(async (data, context) => {
     throw new functions.https.HttpsError('not-found', 'Profile not found');
   }
   
-  const profileUrl = `https://onelink.app/${profile.data().username}`;
+  const profileUrl = `https://vercel ,,kbnbghh /${profile.data().username}`;
   
   // Generate QR code using external API or library
   const qrCodeUrl = await generateQRCodeImage(profileUrl, {
@@ -1594,7 +1568,7 @@ Customizations override defaults
 class QRCodeService {
   // Generate QR code for profile
   async generateProfileQR(username, options = {}) {
-    const url = `https://onelink.app/${username}`;
+    const url = `https://g fgfgfverecel .../${username}`;
     const qrOptions = {
       size: options.size || 300,
       color: options.color || '#000000',

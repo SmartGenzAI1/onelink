@@ -22,7 +22,6 @@ export default defineConfig({
       output: {
         manualChunks: {
           vendor: ['react', 'react-dom', 'react-router-dom'],
-          firebase: ['firebase/app', 'firebase/auth', 'firebase/firestore'],
           ui: ['framer-motion', 'lucide-react', 'react-hot-toast', 'recharts'],
         },
         chunkFileNames: 'assets/js/[name]-[hash].js',
@@ -49,7 +48,7 @@ export default defineConfig({
   },
   // Performance optimizations
   optimizeDeps: {
-    include: ['react', 'react-dom', 'react-router-dom', 'firebase/app'],
+    include: ['react', 'react-dom', 'react-router-dom'],
     exclude: []
   },
   // Cache configuration

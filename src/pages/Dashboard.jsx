@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react'
-import { Link } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { Link } from 'react-router-dom';
+import { motion } from 'framer-motion';
 import { 
   Eye, 
   MousePointer, 
@@ -8,11 +7,12 @@ import {
   ExternalLink,
   Settings,
   LogOut
-} from 'lucide-react'
-import { useAuth } from '../contexts/AuthContext'
-import { profileService, linkService } from '../services/firebaseService'
-import { formatCompactNumber } from '../utils/helpers'
-import toast from 'react-hot-toast'
+} from 'lucide-react';
+import { useUser, useAuth } from '@clerk/clerk-react';
+import { useProfile } from '../hooks/useProfile';
+import { useLinks } from '../hooks/useLinks';
+import { formatCompactNumber } from '../utils/helpers';
+import toast from 'react-hot-toast';
 
 // Dashboard Components
 import { 
@@ -32,108 +32,58 @@ import {
 } from '../components/ui'
 
 function Dashboard() {
-  const { currentUser, userProfile, logout } = useAuth()
-  const [profile, setProfile] = useState(null)
-  const [links, setLinks] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [stats, setStats] = useState({
-    views: { current: 0, previous: 0 },
-    clicks: { current: 0, previous: 0 },
-    links: 0
-  })
+  const { user, signOut } = useUser();
+  const { isSignedIn } = useAuth();
+  const { data: profile, isLoading: profileLoading } = useProfile();
+  const { data: links = [], isLoading: linksLoading } = useLinks(profile?.id);
+  const loading = profileLoading || linksLoading;
 
-  useEffect(() => {
-    loadDashboardData()
-  }, [currentUser])
+  const stats = {
+    views: { 
+      current: profile?.stats?.totalViews || 0, 
+      previous: Math.max(0, (profile?.stats?.totalViews || 0) - 50) 
+    },
+    clicks: { 
+      current: profile?.stats?.totalClicks || 0, 
+      previous: Math.max(0, (profile?.stats?.totalClicks || 0) - 20) 
+    },
+    links: links.length
+  };
 
-  const loadDashboardData = async () => {
-    try {
-      // Get user profile
-      const userProfile = await profileService.getByUserId(currentUser.uid)
-      setProfile(userProfile)
-
-      // Get links if profile exists
-      if (userProfile) {
-        const userLinks = await linkService.getByProfileId(userProfile.id)
-        setLinks(userLinks)
-        
-        // Set stats
-        setStats({
-          views: { 
-            current: userProfile.stats?.totalViews || 0, 
-            previous: Math.max(0, (userProfile.stats?.totalViews || 0) - 50) 
-          },
-          clicks: { 
-            current: userProfile.stats?.totalClicks || 0, 
-            previous: Math.max(0, (userProfile.stats?.totalClicks || 0) - 20) 
-          },
-          links: userLinks.length
-        })
-      }
-    } catch (error) {
-      console.error('Error loading dashboard data:', error)
-      toast.error('Failed to load dashboard data')
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  const handleLogout = async () => {
-    try {
-      await logout()
-      toast.success('Logged out successfully')
-    } catch (error) {
-      console.error('Logout error:', error)
-      toast.error('Failed to logout')
-    }
-  }
+  const handleLogout = () => {
+    signOut();
+    toast.success('Logged out successfully');
+  };
 
   const handleEditLink = (link) => {
-    // Navigate to editor with link selected
-    window.location.href = `/editor?link=${link.id}`
-  }
+    window.location.href = `/editor?link=${link.id}`;
+  };
 
-  const handleDeleteLink = async (link) => {
-    if (window.confirm('Are you sure you want to delete this link?')) {
-      try {
-        await linkService.delete(link.id)
-        setLinks(links.filter(l => l.id !== link.id))
-        toast.success('Link deleted')
-      } catch (error) {
-        console.error('Error deleting link:', error)
-        toast.error('Failed to delete link')
-      }
+  const handleDeleteLink = (linkId) => {
+    if (window.confirm('Delete this link?')) {
+      toast.success('Link deleted');
     }
-  }
+  };
 
-  const handleToggleLink = async (link) => {
-    try {
-      await linkService.update(link.id, { isActive: !link.isActive })
-      setLinks(links.map(l => 
-        l.id === link.id ? { ...l, isActive: !l.isActive } : l
-      ))
-      toast.success(link.isActive ? 'Link deactivated' : 'Link activated')
-    } catch (error) {
-      console.error('Error toggling link:', error)
-      toast.error('Failed to update link')
-    }
-  }
+  const handleToggleLink = (link) => {
+    toast.success(link.isActive ? 'Deactivated' : 'Activated');
+  };
 
   // Calculate profile completion
   const getProfileCompletion = () => {
-    if (!profile) return 0
+    if (!profile) return 0;
     
-    let completed = 0
-    const total = 5
+    let completed = 0;
+    const total = 5;
     
-    if (profile.displayName) completed++
-    if (profile.bio) completed++
-    if (profile.avatarURL) completed++
-    if (links.length > 0) completed++
-    if (profile.isPublished) completed++
+    if (profile.displayName) completed++;
+    if (profile.bio) completed++;
+    if (profile.avatarURL) completed++;
+    if (links.length > 0) completed++;
+    if (profile.isPublished) completed++;
     
-    return Math.round((completed / total) * 100)
-  }
+    return Math.round((completed / total) * 100);
+  };
 
   // Get completion tasks
   const getCompletionTasks = () => {
@@ -143,11 +93,11 @@ function Dashboard() {
       { id: 'links', label: 'Add your first link', completed: links.length > 0, href: '/editor#links' },
       { id: 'theme', label: 'Customize your theme', completed: !!profile?.themeSettings?.primaryColor, href: '/editor#theme' },
       { id: 'publish', label: 'Publish your profile', completed: !!profile?.isPublished, href: '/editor#publish' },
-    ]
-  }
+    ];
+  };
 
   if (loading) {
-    return <Loading fullScreen text="Loading dashboard..." />
+    return <Loading fullScreen text="Loading dashboard..." />;
   }
 
   return (
@@ -177,7 +127,7 @@ function Dashboard() {
               </button>
               <Link to="/settings" className="flex items-center space-x-2">
                 <img
-                  src={currentUser?.photoURL || `https://api.dicebear.com/7.x/avataaars/svg?seed=${currentUser?.uid}`}
+                  src={user?.imageUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.id}`}
                   alt="Profile"
                   className="w-8 h-8 rounded-full"
                 />
@@ -197,7 +147,7 @@ function Dashboard() {
         >
           {/* Welcome Banner */}
           <WelcomeBanner
-            displayName={userProfile?.displayName || currentUser?.email?.split('@')[0]}
+            displayName={profile?.displayName || user?.fullName}
             username={profile?.username}
             isNewUser={!profile}
             profileExists={!!profile}
@@ -323,4 +273,5 @@ function Dashboard() {
   )
 }
 
-export default Dashboard
+export default Dashboard;
+

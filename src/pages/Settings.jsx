@@ -29,7 +29,7 @@ import {
 import { useAuth } from '../hooks/useAuth'
 import { useProfile } from '../hooks/useProfile'
 import { useTheme } from '../hooks/useTheme'
-import { analyticsService } from '../services/analyticsService'
+import { analyticsApi } from '../lib/api'
 
 function Settings() {
   const navigate = useNavigate()

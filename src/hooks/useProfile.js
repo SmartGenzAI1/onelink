@@ -1,46 +1,16 @@
-import { useState, useEffect } from 'react'
-import { profileService } from '../services/firebaseService'
+import { useQuery } from '@tanstack/react-query';
+import { profilesApi } from '../lib/api';
+import { useUser } from '@clerk/clerk-react';
 
-export function useProfile(userId) {
-  const [profile, setProfile] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
+export function useProfile() {
+  const { user } = useUser();
 
-  useEffect(() => {
-    if (!userId) {
-      setLoading(false)
-      return
-    }
-
-    const fetchProfile = async () => {
-      try {
-        setLoading(true)
-        const profileData = await profileService.getByUserId(userId)
-        setProfile(profileData)
-      } catch (err) {
-        setError(err.message)
-      } finally {
-        setLoading(false)
-      }
-    }
-
-    fetchProfile()
-  }, [userId])
-
-  const refresh = async () => {
-    if (!userId) return
-    try {
-      setLoading(true)
-      const profileData = await profileService.getByUserId(userId)
-      setProfile(profileData)
-    } catch (err) {
-      setError(err.message)
-    } finally {
-      setLoading(false)
-    }
-  }
-
-  return { profile, loading, error, refresh }
+  return useQuery({
+    queryKey: ['profile', user?.id],
+    queryFn: () => profilesApi.getByUserId(user.id),
+    enabled: !!user?.id,
+  });
 }
 
-export default useProfile
+export default useProfile;
+

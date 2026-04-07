@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Mail, Lock, Loader2 } from 'lucide-react';
+import { Mail, Loader2 } from 'lucide-react';
 import Input from '../ui/Input';
 import Button from '../ui/Button';
 
@@ -13,32 +13,26 @@ const LoginForm = ({
   error = '',
 }) => {
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [formErrors, setFormErrors] = useState({});
 
   const validateForm = () => {
     const errors = {};
-    
+
     if (!email) {
       errors.email = 'Email is required';
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
       errors.email = 'Please enter a valid email address';
     }
-    
-    if (!password) {
-      errors.password = 'Password is required';
-    }
-    
+
     setFormErrors(errors);
     return Object.keys(errors).length === 0;
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     if (validateForm()) {
-      onSubmit({ email, password, rememberMe });
+      onSubmit({ email });
     }
   };
 
@@ -68,6 +62,17 @@ const LoginForm = ({
         </motion.div>
       )}
 
+      {/* Info box about magic link */}
+      <motion.div
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
+      >
+        <p className="text-sm text-blue-700 dark:text-blue-300 text-center">
+          Enter your email and we'll send you a magic link to sign in. No password needed!
+        </p>
+      </motion.div>
+
       {/* Email Field */}
       <Input
         id="email"
@@ -86,46 +91,6 @@ const LoginForm = ({
         autoComplete="email"
       />
 
-      {/* Password Field */}
-      <Input
-        id="password"
-        type="password"
-        label="Password"
-        placeholder="Enter your password"
-        value={password}
-        onChange={(e) => {
-          setPassword(e.target.value);
-          clearError('password');
-        }}
-        error={formErrors.password}
-        icon={<Lock className="w-5 h-5" />}
-        disabled={loading}
-        required
-        autoComplete="current-password"
-      />
-
-      {/* Remember Me & Forgot Password */}
-      <div className="flex items-center justify-between">
-        <label className="flex items-center cursor-pointer group">
-          <input
-            type="checkbox"
-            checked={rememberMe}
-            onChange={(e) => setRememberMe(e.target.checked)}
-            className="w-4 h-4 rounded border-gray-300 text-primary-600 focus:ring-primary-500 transition-colors"
-            disabled={loading}
-          />
-          <span className="ml-2 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-gray-200 transition-colors">
-            Remember me
-          </span>
-        </label>
-        <Link
-          to="/forgot-password"
-          className="text-sm text-primary-600 hover:text-primary-700 dark:text-primary-400 dark:hover:text-primary-300 font-medium transition-colors"
-        >
-          Forgot password?
-        </Link>
-      </div>
-
       {/* Submit Button */}
       <Button
         type="submit"
@@ -137,7 +102,7 @@ const LoginForm = ({
         {loading ? (
           <Loader2 className="w-5 h-5 animate-spin" />
         ) : (
-          'Sign In'
+          'Send Magic Link'
         )}
       </Button>
     </motion.form>

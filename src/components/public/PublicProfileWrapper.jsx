@@ -9,7 +9,7 @@ import {
   Mail,
   MoreHorizontal 
 } from 'lucide-react';
-import { profileService, linkService, analyticsService } from '../../services/firebaseService';
+
 import { getVisitorData, getProfileUrl } from '../../utils/helpers';
 import { updateMetaTags, generateProfileSEO, injectStructuredData, resetMetaTags } from '../../utils/seo';
 import TemplateRenderer, { getTemplateDefaultSettings } from '../templates/TemplateRenderer';
@@ -21,10 +21,6 @@ import QRCodeModal from './QRCodeModal';
 import ShareButton from './ShareButton';
 import toast from 'react-hot-toast';
 
-/**
- * PublicProfileWrapper Component
- * Main wrapper that loads profile data and renders the public profile page
- */
 const PublicProfileWrapper = () => {
   const { username } = useParams();
   const navigate = useNavigate();
@@ -48,16 +44,16 @@ const PublicProfileWrapper = () => {
       setLoading(true);
       setError(null);
 
-      // Get profile by username
-      const profileData = await profileService.getByUsername(username);
+      // Frontend API call to backend (Clerk protected or public)
+      const response = await fetch(`/api/profiles/username/${username}`);
+      const profileData = await response.json();
       
-      if (!profileData) {
+      if (!profileData || response.status !== 200) {
         setError('Profile not found');
         setLoading(false);
         return;
       }
 
-      // Check if profile is published
       if (!profileData.isPublished) {
         setError('This profile is not publicly available');
         setLoading(false);
@@ -67,11 +63,9 @@ const PublicProfileWrapper = () => {
       setProfile(profileData);
 
       // Get links
-      const profileLinks = await linkService.getByProfileId(profileData.id);
+      const linksResponse = await fetch(`/api/links/${profileData.id}`);
+      const profileLinks = await linksResponse.json();
       setLinks(profileLinks.filter(link => link.isActive));
-
-      // Track profile view
-      trackProfileView(profileData.id);
 
     } catch (err) {
       console.error('Error loading profile:', err);
@@ -85,8 +79,16 @@ const PublicProfileWrapper = () => {
   const trackProfileView = async (profileId) => {
     try {
       const visitorData = getVisitorData();
-      await analyticsService.trackView(profileId, visitorData);
-      await profileService.incrementViews(profileId);
+      await fetch(`/api/analytics/${profileId}/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'view',
+          visitorData,
+          date: new Date().toISOString().split('T')[0],
+          hour: new Date().getHours(),
+        }),
+      });
     } catch (err) {
       console.error('Error tracking view:', err);
     }
@@ -97,25 +99,33 @@ const PublicProfileWrapper = () => {
     if (!profile) return;
 
     try {
-      // Track click
       const visitorData = getVisitorData();
-      await analyticsService.trackClick(profile.id, link.id, link.title, visitorData);
-      await linkService.incrementClicks(link.id);
-      await profileService.incrementClicks(profile.id);
+      await fetch(`/api/analytics/${profile.id}/track`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          type: 'click',
+          linkId: link.id,
+          linkTitle: link.title,
+          visitorData,
+          date: new Date().toISOString().split('T')[0],
+          hour: new Date().getHours(),
+        }),
+      });
     } catch (err) {
       console.error('Error tracking click:', err);
     }
+    
+    // Open link
+    window.open(link.url, '_blank');
   }, [profile]);
 
   // Handle contact form submission
   const handleContactSubmit = async (formData) => {
-    // In a real app, this would send an email or store the message
     console.log('Contact form submitted:', formData);
-    // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
   };
 
-  // Loading state
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -131,7 +141,6 @@ const PublicProfileWrapper = () => {
     );
   }
 
-  // Error state
   if (error || !profile) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50 dark:bg-gray-900 p-4">
@@ -168,12 +177,10 @@ const PublicProfileWrapper = () => {
     );
   }
 
-  // Get template settings
   const templateId = profile.templateId || 'minimal';
   const themeSettings = profile.themeSettings || getTemplateDefaultSettings(templateId);
   const profileUrl = getProfileUrl(username);
 
-  // Get animation type for background
   const getAnimationType = () => {
     const animationMap = {
       particles: 'particles',
@@ -188,7 +195,6 @@ const PublicProfileWrapper = () => {
 
   return (
     <div className="relative min-h-screen">
-      {/* Animated Background */}
       <AnimatedBackground
         type={getAnimationType()}
         colors={{
@@ -198,11 +204,8 @@ const PublicProfileWrapper = () => {
         }}
       />
 
-      {/* Main Content */}
       <div className="relative z-10">
-        {/* Action Buttons (Top Right) */}
         <div className="fixed top-4 right-4 z-20 flex items-center gap-2">
-          {/* Share Button */}
           <ShareButton
             url={profileUrl}
             title={`${profile.displayName} - OneLink`}
@@ -211,7 +214,6 @@ const PublicProfileWrapper = () => {
             className="bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-lg"
           />
 
-          {/* QR Code Button */}
           <motion.button
             onClick={() => setShowQRModal(true)}
             className="p-2.5 rounded-full bg-white/90 dark:bg-gray-800/90 backdrop-blur-sm shadow-lg hover:bg-white dark:hover:bg-gray-700 transition-colors"
@@ -221,7 +223,6 @@ const PublicProfileWrapper = () => {
             <QrCode className="w-5 h-5 text-gray-600 dark:text-gray-300" />
           </motion.button>
 
-          {/* Contact Button (if email is available) */}
           {profile.socialLinks?.email && (
             <ContactFormButton
               onClick={() => setShowContactForm(true)}
@@ -231,7 +232,6 @@ const PublicProfileWrapper = () => {
           )}
         </div>
 
-        {/* Template Content */}
         <TemplateRenderer
           templateId={templateId}
           profile={{
@@ -243,7 +243,6 @@ const PublicProfileWrapper = () => {
           themeSettings={themeSettings}
         />
 
-        {/* Profile Stats (Optional) */}
         {profile.stats && (
           <div className="max-w-md mx-auto px-4 pb-4">
             <ProfileStats
@@ -254,11 +253,9 @@ const PublicProfileWrapper = () => {
           </div>
         )}
 
-        {/* Footer */}
         <ProfileFooter variant="minimal" className="pb-8" />
       </div>
 
-      {/* QR Code Modal */}
       <QRCodeModal
         isOpen={showQRModal}
         onClose={() => setShowQRModal(false)}
@@ -266,7 +263,6 @@ const PublicProfileWrapper = () => {
         profileName={profile.displayName}
       />
 
-      {/* Contact Form Modal */}
       <ContactForm
         isOpen={showContactForm}
         onClose={() => setShowContactForm(false)}
@@ -278,19 +274,15 @@ const PublicProfileWrapper = () => {
   );
 };
 
-/**
- * PublicProfileWrapperWithSEO Component
- * Wrapper with SEO meta tags
- */
 export const PublicProfileWrapperWithSEO = () => {
   const { username } = useParams();
   const [profile, setProfile] = useState(null);
 
-  // Load profile for SEO
   useEffect(() => {
     const loadProfileForSEO = async () => {
       try {
-        const profileData = await profileService.getByUsername(username);
+        const response = await fetch(`/api/profiles/username/${username}`);
+        const profileData = await response.json();
         setProfile(profileData);
       } catch (err) {
         console.error('Error loading profile for SEO:', err);
@@ -299,19 +291,14 @@ export const PublicProfileWrapperWithSEO = () => {
     loadProfileForSEO();
   }, [username]);
 
-  // Update document meta tags using SEO utilities
   useEffect(() => {
     if (profile) {
-      // Update meta tags
       const seoOptions = generateProfileSEO(profile, username);
       updateMetaTags(seoOptions);
-
-      // Inject structured data
       const structuredData = generateProfileStructuredData(profile, username);
       injectStructuredData(structuredData);
     }
 
-    // Cleanup - reset meta tags when unmounting
     return () => {
       resetMetaTags();
     };
@@ -321,3 +308,4 @@ export const PublicProfileWrapperWithSEO = () => {
 };
 
 export default PublicProfileWrapper;
+

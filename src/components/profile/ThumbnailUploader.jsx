@@ -8,11 +8,9 @@ import {
   Trash2,
   Loader2,
   ZoomIn,
-  RotateCw,
   Check,
   AlertCircle
 } from 'lucide-react'
-import { storageService } from '../../services/firebaseService'
 
 // Accepted file types
 const ACCEPTED_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
@@ -62,31 +60,20 @@ const ThumbnailUploader = ({
     setIsUploading(true)
 
     try {
-      // Create preview URL
+      // Create preview URL (temporary - file upload to backend needed)
       const previewUrl = URL.createObjectURL(file)
-      
-      // Upload to Firebase Storage
-      if (userId && linkId) {
-        const result = await storageService.uploadLinkIcon(userId, linkId, file)
-        onChange?.({
-          url: result.url,
-          path: result.path,
-          name: file.name,
-          size: file.size,
-          type: file.type
-        })
-      } else {
-        // Just use preview URL if no storage configured
-        onChange?.({
-          url: previewUrl,
-          name: file.name,
-          size: file.size,
-          type: file.type
-        })
-      }
+
+      // TODO: Implement file upload to backend storage
+      // For now, just use the preview URL
+      onChange?.({
+        url: previewUrl,
+        name: file.name,
+        size: file.size,
+        type: file.type
+      })
     } catch (err) {
       console.error('Upload error:', err)
-      setError('Failed to upload image. Please try again.')
+      setError('Failed to process image. Please try again.')
     } finally {
       setIsUploading(false)
     }
@@ -343,14 +330,11 @@ export const ThumbnailUploaderCompact = ({
 
     setIsUploading(true)
     try {
+      // Create preview URL (temporary - file upload to backend needed)
       const previewUrl = URL.createObjectURL(file)
-      
-      if (userId && linkId) {
-        const result = await storageService.uploadLinkIcon(userId, linkId, file)
-        onChange?.({ url: result.url, name: file.name })
-      } else {
-        onChange?.({ url: previewUrl, name: file.name })
-      }
+
+      // TODO: Implement file upload to backend storage
+      onChange?.({ url: previewUrl, name: file.name })
     } catch (err) {
       console.error('Upload error:', err)
     } finally {
